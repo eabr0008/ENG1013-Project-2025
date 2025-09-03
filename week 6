@@ -1,13 +1,24 @@
 from pymata4 import pymata4
 board = pymata4.Pymata4()
 import time
-#pin 1
+#first pin
 PB1 = 13
-#pin 2
+#second pin
 PB2 = 12
+#thrid pin
+TL5 = 11
+#fourth pin
+TL4 = 10
+#fifth pin
+PL1 = 9
+#sixth pin
+PL2 = 8
 PB1Input = board.set_pin_mode_digital_input(PB1)
 PB2Input = board.set_pin_mode_digital_input(PB2)
-
+TL5Output = board.set_pin_mode_digital_output(TL5)
+TL4Output = board.set_pin_mode_digital_output(TL4)
+PL1Output = board.set_pin_mode_digital_output(PL1)
+PL2Output = board.set_pin_mode_digital_output(PL2)
 
 while True:
     Is1Pressed = board.digital_read(PB1)
@@ -20,7 +31,6 @@ while True:
 
 #board.digital_write(pin, 1)
 #board.digital_write(pin, 0)
-
 #value = board.digital_read(pin)
 
 
