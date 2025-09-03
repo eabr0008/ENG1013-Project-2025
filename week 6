@@ -2,16 +2,26 @@ from pymata4 import pymata4
 board = pymata4.Pymata4()
 import time
 #pin 1
-
+PB1 = 13
 #pin 2
+PB2 = 12
+PB1Input = board.set_pin_mode_digital_input(PB1)
+PB2Input = board.set_pin_mode_digital_input(PB2)
 
 
-board.set_pin_mode_digital_input(pin)
-board.set_pin_mode_digital_output(pin)
-board.digital_write(pin, 1)
-board.digital_write(pin, 0)
+while True:
+    Is1Pressed = board.digital_read(PB1)
+    Is2Pressed = board.digital_read(PB2)
+    if Is1Pressed[0]==1 or Is2Pressed[0]==1:
+        time.sleep(2)
+        
 
-value = board.digital_read(pin)
+        
+
+#board.digital_write(pin, 1)
+#board.digital_write(pin, 0)
+
+#value = board.digital_read(pin)
 
 
 
