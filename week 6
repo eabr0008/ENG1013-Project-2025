@@ -1,8 +1,17 @@
-#This is a test, search up a yt vid to learn how to use github: https://www.youtube.com/watch?v=0LrNRBI_mYU
+from pymata4 import pymata4
+board = pymata4.Pymata4()
+import time
+#pin 1
+
+#pin 2
 
 
+board.set_pin_mode_digital_input(pin)
+board.set_pin_mode_digital_output(pin)
+board.digital_write(pin, 1)
+board.digital_write(pin, 0)
 
-
+value = board.digital_read(pin)
 
 
 
