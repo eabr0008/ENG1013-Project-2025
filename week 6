@@ -13,27 +13,26 @@ TL4 = 10
 PL1 = 9
 #sixth pin
 PL2 = 8
-PB1Input = board.set_pin_mode_digital_input(PB1)
-PB2Input = board.set_pin_mode_digital_input(PB2)
-TL5Output = board.set_pin_mode_digital_output(TL5)
-TL4Output = board.set_pin_mode_digital_output(TL4)
-PL1Output = board.set_pin_mode_digital_output(PL1)
-PL2Output = board.set_pin_mode_digital_output(PL2)
+def main_func():
+    board.set_pin_mode_digital_input(PB1)
+    board.set_pin_mode_digital_input(PB2)
+    board.set_pin_mode_digital_output(TL5)
+    board.set_pin_mode_digital_output(TL4)
+    board.set_pin_mode_digital_output(PL1)
+    board.set_pin_mode_digital_output(PL2)
 
-while True:
-    Is1Pressed = board.digital_read(PB1)
-    Is2Pressed = board.digital_read(PB2)
-    if Is1Pressed[0]==1 or Is2Pressed[0]==1:
-        time.sleep(2)
-        
+    while True:
+        Is1Pressed = board.digital_read(PB1)
+        Is2Pressed = board.digital_read(PB2)
+        if Is1Pressed[0]==1 or Is2Pressed[0]==1:
+            time.sleep(2)
+            
 
-        
+
 
 #board.digital_write(pin, 1)
-#board.digital_write(pin, 0)
-#value = board.digital_read(pin)
-
-
+    #board.digital_write(pin, 0)
+    #value = board.digital_read(pin)
 
 
 
