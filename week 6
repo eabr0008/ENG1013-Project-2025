@@ -26,6 +26,15 @@ def main_func():
         Is2Pressed = board.digital_read(PB2)
         if Is1Pressed[0]==1 or Is2Pressed[0]==1:
             time.sleep(2)
+            #a print statement showing what was pressed (once)
+        else:
+            #stay red
+            while True:
+                if #TL4 has been red for exactly 20 sec:
+                #turn yellow then red
+                
+            
+            
             
 
 
