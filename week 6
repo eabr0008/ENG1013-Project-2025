@@ -1,17 +1,17 @@
 from pymata4 import pymata4
 board = pymata4.Pymata4()
 import time
-#first pin
+#push button 1
 PB1 = 13
-#second pin
+#push button 2
 PB2 = 12
-#thrid pin
-TL5 = 11
-#fourth pin
+#traffic light 4
 TL4 = 10
-#fifth pin
+#traffic light 5
+TL5 = 11
+#pedestrian light 1
 PL1 = 9
-#sixth pin
+#pedestrian light 2
 PL2 = 8
 def main_func():
     board.set_pin_mode_digital_input(PB1)
