@@ -109,7 +109,7 @@ def main_func():
 
         
     else:
-        #stay red
+        time.sleep(20)#stay red for 20 seconds
         while True:
             if #TL4 has been red for exactly 20 sec:
             #turn yellow then red
