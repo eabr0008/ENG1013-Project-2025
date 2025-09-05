@@ -46,9 +46,10 @@ def main_func():
     board.digital_write(srclk, 0)
     board.digital_write(rclk, 0)
 
+    #====================REFER TO ME FOR SHIFT REGISTER LAYOUT==================
     # Q0 to Q7 wiring:
     # Q0=TL4R, Q1=TL4Y, Q2=TL4G, Q3=TL5R, Q4=TL5Y, Q5=TL5G
-
+    #===========================================================================
     # Track whether a press has already occurred, starting with False
     pb1_occured = False
     pb2_occured = False
