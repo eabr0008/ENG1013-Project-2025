@@ -18,15 +18,23 @@ TL5 = 11
 PL1 = 9
 #pedestrian light 2
 PL2 = 8
+# pin setup
+ser = 5 #prepares data
+srclk = 6 #rising edge locks it in and moves everything down
+rclk = 7 #rising edge transfers content to ouput pins (traffic light)
 def main_func():
+    print("Starting program...")
+    # pin mode configuration
+    board.set_pin_mode_digital_output(ser)
+    board.set_pin_mode_digital_output(rclk)
+    board.set_pin_mode_digital_output(srclk)
     board.set_pin_mode_digital_input(PB1)
     board.set_pin_mode_digital_input(PB2)
-    board.set_pin_mode_digital_output(TL5)
-    board.set_pin_mode_digital_output(TL4)
-    board.set_pin_mode_digital_output(PL1)
-    board.set_pin_mode_digital_output(PL2)
-
+    # default pin states
+    board.digital_write(srclk, 0)
+    board.digital_write(rclk, 0)
     while True:
+        
         Is1Pressed = board.digital_read(PB1)
         Is2Pressed = board.digital_read(PB2)
         if Is1Pressed[0]==1 or Is2Pressed[0]==1:
@@ -38,10 +46,24 @@ def main_func():
                 if #TL4 has been red for exactly 20 sec:
                 #turn yellow then red
                 
-            
-            
-            
+ 
 
+
+'''
+# set ser pin state
+board.digital_write(ser,1)
+ 
+# push to storage register
+board.digital_write(srclk, 1)
+board.digital_write(srclk, 0)
+ 
+# copy storage register to display outputs
+board.digital_write(rclk, 1)
+board.digital_write(rclk, 0)
+ 
+# short sleep
+time.sleep(0.5)            
+'''
 
 
 #board.digital_write(pin, 1)
