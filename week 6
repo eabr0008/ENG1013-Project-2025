@@ -64,10 +64,10 @@ def main_func():
         bits_q0_to_q7: list of 8 ints (0/1) ordered Q0..Q7
         Clocks Q0 first, through to Q7
         """
-        for bit in bits_q0_to_q7:   # Q0 - Q7
+        for bit in bits_q0_to_q7:      # Q0 - Q7
             board.digital_write(ser, bit)
             reg_pulse(srclk)           # shift on rising edge
-        reg_pulse(rclk)                 # latch to outputs
+        reg_pulse(rclk)                # latch to outputs
 
    # starts with TL4 green and TL5 red
     shift_out([0,0,1, 1,0,0, 0,0])
