@@ -1,3 +1,8 @@
+# Initial prototype of subsystem 2 milestone 2 code
+# Created By : Eden Abrahams
+# Created Date: 05/09/2025
+# version = 1.0
+
 from pymata4 import pymata4
 board = pymata4.Pymata4()
 import time
@@ -40,8 +45,8 @@ def main_func():
 
 
 #board.digital_write(pin, 1)
-    #board.digital_write(pin, 0)
-    #value = board.digital_read(pin)
+#board.digital_write(pin, 0)
+#value = board.digital_read(pin)
 
 
 
