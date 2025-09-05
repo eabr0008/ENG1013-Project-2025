@@ -10,19 +10,26 @@ import time
 PB1 = 13
 #push button 2
 PB2 = 12
-#traffic light 4
-TL4 = 10
-#traffic light 5
-TL5 = 11
-#pedestrian light 1
-PL1 = 9
-#pedestrian light 2
-PL2 = 8
+#pedestrian light 2 - red
+PL2R = 11
+#pedestrian light 2 - green
+PL2G = 10
+#pedestrian light 1 - red
+PL1R = 9
+#pedestrian light 1 - green
+PL1G = 8
 # pin setup
 ser = 5 #prepares data
 srclk = 6 #rising edge locks it in and moves everything down
 rclk = 7 #rising edge transfers content to ouput pins (traffic light)
 def main_func():
+    '''
+        Used to run traffic light program
+            Parameters:
+                None
+            Returns:
+                None
+        '''
     print("Starting program...")
     # pin mode configuration
     board.set_pin_mode_digital_output(ser)
@@ -30,23 +37,83 @@ def main_func():
     board.set_pin_mode_digital_output(srclk)
     board.set_pin_mode_digital_input(PB1)
     board.set_pin_mode_digital_input(PB2)
+    board.set_pin_mode_digital_output(PL1R)
+    board.set_pin_mode_digital_output(PL1G)
+    board.set_pin_mode_digital_output(PL2R)
+    board.set_pin_mode_digital_output(PL2G)
+
     # default pin states
     board.digital_write(srclk, 0)
     board.digital_write(rclk, 0)
+
+    # Q0 to Q7 wiring:
+    # Q0=TL4R, Q1=TL4Y, Q2=TL4G, Q3=TL5R, Q4=TL5Y, Q5=TL5G
+
+    # Track whether a press has already occurred, starting with False
+    pb1_occured = False
+    pb2_occured = False
+    
+    # functions for shift register
+    def reg_pulse(pin):
+        board.digital_write(pin, 1)
+        board.digital_write(pin, 0)
+
+    def shift_out(bits_q0_to_q7):
+        """
+        bits_q0_to_q7: list of 8 ints (0/1) ordered Q0..Q7
+        Clocks Q0 first, through to Q7
+        """
+        for bit in bits_q0_to_q7:   # Q0 - Q7
+            board.digital_write(ser, bit)
+            reg_pulse(srclk)           # shift on rising edge
+        reg_pulse(rclk)                 # latch to outputs
+
+   # starts with TL4 green and TL5 red
+    shift_out([0,0,1, 1,0,0, 0,0])
+
+    # start pedestrian lights as red
+    board.digital_write(PL1R, 1)
+    board.digital_write(PL1G, 0)
+    board.digital_write(PL2R, 1)
+    board.digital_write(PL2G, 0)
+
+
+    def r1_run():
+        '''
+        Used to run 2R1 sequence
+            Parameters:
+                None
+            Returns:
+                None
+        '''
+        time.sleep(2)
+       
     while True:
-        
-        Is1Pressed = board.digital_read(PB1)
+        Is1Pressed = board.digital_read(PB1)  # read each iteration
         Is2Pressed = board.digital_read(PB2)
-        if Is1Pressed[0]==1 or Is2Pressed[0]==1:
-            time.sleep(2)
-            #a print statement showing what was pressed (once)
-        else:
-            #stay red
-            while True:
-                if #TL4 has been red for exactly 20 sec:
-                #turn yellow then red
-                
- 
+
+        if Is1Pressed[0] == 1 and not pb1_occured:
+            print("PB1 was pressed")
+            pb1_occured = True
+            r1_run()
+
+        elif Is2Pressed[0] == 1 and not pb2_occured:
+            print("PB2 was pressed")
+            pb2_occured = True
+            r1_run()
+
+        time.sleep(0.01)  # small delay
+
+        
+
+        
+    else:
+        #stay red
+        while True:
+            if #TL4 has been red for exactly 20 sec:
+            #turn yellow then red
+            
+
 
 
 '''
