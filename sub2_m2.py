@@ -1,7 +1,7 @@
 # Initial prototype of subsystem 2 milestone 2 code
 # Created By : Eden Abrahams & Majd Abou Zaki
 # Last Edited Date: 08/09/2025
-# version = 1.3
+# version = 1.4
 from pymata4 import pymata4
 board = pymata4.Pymata4()
 import time
@@ -49,6 +49,10 @@ flashFreq = 3 #just chose a random frequency for flashing red
 board.set_pin_mode_digital(pb1)
 board.set_pin_mode_digital(pb2)
 
+#set the pins to digital output (for LEDs)
+for pin in ledPinNums:
+    board.set_pin_mode_digital_output(pin)
+
 def turn_off():
     '''
     function makes each pin to output 0V (all off)
@@ -57,9 +61,7 @@ def turn_off():
     '''
     for pin in ledPinNums:
         board.digital_write(pin, 0)
-#set the pins to digital output (for LEDs)
-for pin in ledPinNums:
-    board.set_pin_mode_digital_output(pin)
+
 
 def make(light, state):
     '''
@@ -81,7 +83,7 @@ startTime = time.time()
 pedPressed = False #is a pedestrian button pressed
 pedPressTime = None #time at press
 pedPrinted = False #has this been printed 
-currentPreemptedRoad = None   # "TL4" or "TL5" during a preempt yellow
+currentWayEnding = None   # "TL4" or "TL5" 
 
 
 try:
@@ -106,14 +108,14 @@ try:
         if pedPressed and (currentTime - pedPressTime >= pedDelayBeforeSequence):
         #checked if button is pressed that elapsed time of 2 seconds has passed
             if lightState not in ("TL5_Red"): #2.R1 if TL5 is not red, goes yellow, getting ready for peds
-                currentPreemptedRoad = "TL5"
+                currentWayEnding = "TL5"
                 make(tl5G, 0); make(tl5Y, 1); make(tl5R, 0)
                 make(tl4G, 0); make(tl4Y, 0); make(tl4R, 1)
             else:
-                currentPreemptedRoad = "TL4" #then now make TL4 yellow, getting ready for peds
+                currentWayEnding = "TL4" #then now make TL4 yellow, getting ready for peds
                 make(tl4G, 0); make(tl4Y, 1); make(tl4R, 0)
                 make(tl5G, 0); make(tl5Y, 0); make(tl5R, 1)
-            state = "Preempt_Yellow"
+            state = "Current_Stream_Yellow"
             startTime = currentTime
             pedPrinted = False
         
@@ -130,7 +132,7 @@ try:
                 state = "TL5_Green"
                 startTime = currentTime
         elif state == "TL5_Green":
-            if elapsedTime >= durTl4Yellow #check if 3s have passed, make tl5 yellow
+            if elapsedTime >= durTl4Yellow: #check if 3s have passed, make tl5 yellow
                 make(tl5G, 0); make(tl5Y, 1); make(tl5R, 0)
                 state = "TL5_Yellow"
                 startTime = currentTime
@@ -141,7 +143,33 @@ try:
                 state = "TL4_Green"
                 startTime = currentTime
         #pedestrian actions now:
-        elif state ==
+        #now that the current stream of traffic has turned yellow for 3s,
+        #all traffic can turn red and peds can cross
+        elif state == "Current_Stream_Yellow":
+            if currentTime >= durTl5Yellow and currentWayEnding == "TL5": 
+                make(tl5G, 0); make(tl5Y, 0); make(tl5R, 1)
+                make(pl1G, 1); make(pl1R, 0)
+                make(pl2G, 1); make(pl2R, 0)
+                state = "Ped_Green"
+                startTime = currentTime
+            elif currentTime >= durTl4Yellow and currentWayEnding == "TL4": 
+                make(tl4G, 0); make(tl4Y, 0); make(tl4R, 1)
+                make(pl1G, 1); make(pl1R, 0)
+                make(pl2G, 1); make(pl2R, 0)
+                state = "Ped_Green"
+                startTime = currentTime
+        elif state == "Ped_Green":
+            if currentTime >= durPedGreen:
+                make(pl1G, 0); make(pl2G, 0)
+                state = "Ped_Flash_Red"
+                startTime = currentTime
+        elif state == "Ped_Flash_Red":
+            #need to add a way to make it flash
+            pedPressed = False; pedPressTime = None
+            time.sleep(0.1)
+
+            
+            
 except KeyboardInterrupt:
     turn_off()
     board.shutdown()
