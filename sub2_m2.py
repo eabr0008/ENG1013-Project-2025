@@ -1,7 +1,7 @@
 # Initial prototype of subsystem 2 milestone 2 code
 # Created By : Eden Abrahams & Majd Abou Zaki
 # Last Edited Date: 08/09/2025
-# version = 1.7
+# version = 1.8
 '''
 Used chatGPT 5 in the lines 174,176,177, where it was quite difficult 
 to find an elegent way to make the pedestrian light flash smoothly
@@ -14,8 +14,8 @@ import time
 #assigning the push buttons and lights to digital pin numbers on the arduino:
 
 #pb pin numbers:
-pb1 = 15
-pb2 = 16
+pb1 = 1
+pb2 = 2
 
 #tl4 pin numbers:
 tl4G = 2
@@ -36,6 +36,7 @@ pl2R = 11
 
 ledPinNums = [tl4G,tl4Y,tl4R,tl5G,tl5Y,tl5R,pl1G,pl1R,pl2G,pl2R]
 
+
 #Common Durations:
 
 #traffic lights:
@@ -52,13 +53,12 @@ flashHz = 3 #flash 3 times per second
 
 #initialisations for inputs
 #needs to be analogue due to bouncing and noise issues
-board.set_pin_mode_analogue_input(pb1)
-board.set_pin_mode_analogue_input(pb2)
+board.set_pin_mode_analog_input(pb1)
+board.set_pin_mode_analog_input(pb2)
 
 #set the pins to digital output (for LEDs)
 for pin in ledPinNums:
     board.set_pin_mode_digital_output(pin)
-
 def turn_off():
     '''
     function makes each pin to output 0V (all off)
@@ -99,8 +99,8 @@ try:
         currentTime = time.time()
         elapsedTime = currentTime - startTime
         # read buttons (active-low, 0 means is pressed)
-        pb1Pressed = (board.analogue_read(pb1)[0] == 1023)
-        pb2Pressed = (board.analogue_read(pb2)[0] == 1023)
+        pb1Pressed = board.analog_read(pb1)[0] == 1023
+        pb2Pressed = board.analog_read(pb2)[0] == 1023
         #reading the button presses and printing accordingly
         if (pb1Pressed or pb2Pressed) and not pedPressed:
             pedPressed = True 
@@ -132,6 +132,7 @@ try:
         if state == "TL4_Green":
             if elapsedTime >= durTl4Green: #if tl4 has been green for 20s
                 make(tl4G, 0); make(tl4Y, 1); make(tl4R, 0)
+                make(tl5G, 0); make(tl5Y, 0); make(tl5R, 1)
                 state = "TL4_Yellow"
                 startTime = currentTime
                 continue
@@ -145,14 +146,14 @@ try:
         elif state == "TL5_Green":
             if elapsedTime >= durTl5Green: #check if 3s have passed, make tl5 yellow
                 make(tl5G, 0); make(tl5Y, 1); make(tl5R, 0)
+                make(tl4G, 0); make(tl4Y, 0); make(tl4R, 1)
                 state = "TL5_Yellow"
                 startTime = currentTime
                 continue
         elif state == "TL5_Yellow":
             if elapsedTime >= durTl5Yellow:
-                make(tl4G, 1); make(tl4Y, 0); make(tl4R, 0)
                 make(tl5G, 0); make(tl5Y, 0); make(tl5R, 1)
-                state = "TL4_Green"
+                make(tl4G, 1); make(tl4Y, 0); make(tl4R, 0)
                 startTime = currentTime
                 continue
         #pedestrian actions now:
@@ -202,5 +203,7 @@ try:
 except KeyboardInterrupt:
     print("Shutting Down...")
     turn_off()
+    make(pl1G, 0); make(pl2G, 0)
+    make(pl1R, 0); make(pl2R, 0)
     board.shutdown()
 
