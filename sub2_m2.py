@@ -1,7 +1,7 @@
 # Initial prototype of subsystem 2 milestone 2 code
 # Created By : Eden Abrahams & Majd Abou Zaki
 # Last Edited Date: 08/09/2025
-# version = 1.6
+# version = 1.7
 '''
 Used chatGPT 5 in the lines 174,176,177, where it was quite difficult 
 to find an elegent way to make the pedestrian light flash smoothly
@@ -14,8 +14,8 @@ import time
 #assigning the push buttons and lights to digital pin numbers on the arduino:
 
 #pb pin numbers:
-pb1 = 12
-pb2 = 13
+pb1 = 15
+pb2 = 16
 
 #tl4 pin numbers:
 tl4G = 2
@@ -51,8 +51,9 @@ durPedFlash = 2 #ped flashes red for 2 seconds
 flashHz = 3 #flash 3 times per second
 
 #initialisations for inputs
-board.set_pin_mode_digital_input_pullup(pb1)
-board.set_pin_mode_digital_input_pullup(pb2)
+#needs to be analogue due to bouncing and noise issues
+board.set_pin_mode_analogue_input(pb1)
+board.set_pin_mode_analogue_input(pb2)
 
 #set the pins to digital output (for LEDs)
 for pin in ledPinNums:
@@ -98,20 +99,19 @@ try:
         currentTime = time.time()
         elapsedTime = currentTime - startTime
         # read buttons (active-low, 0 means is pressed)
-        pb1Pressed = (board.digital_read(pb1)[0] == 0)
-        pb2Pressed = (board.digital_read(pb2)[0] == 0)
+        pb1Pressed = (board.analogue_read(pb1)[0] == 1023)
+        pb2Pressed = (board.analogue_read(pb2)[0] == 1023)
         #reading the button presses and printing accordingly
-        if (pb1Pressed or pb2Pressed) and not pedPressed :
+        if (pb1Pressed or pb2Pressed) and not pedPressed:
             pedPressed = True 
             pedPressTime = currentTime
             #avoid multiple presses affecting prints and cycles via tracking of printed
-            if not pedPrinted:
-                if pb1Pressed:
-                    print("PB1 was pressed")
-                    pedPrinted = True
-                else:
-                    print("PB2 was pressed")
-                    pedPrinted = True
+            if pb1Pressed:
+                print("PB1 was pressed")
+                pedPrinted = True
+            else:
+                print("PB2 was pressed")
+                pedPrinted = True
         if pedPressed and (currentTime - pedPressTime >= pedDelayBeforeSequence) and state not in ("Current_Stream_Yellow", "Ped_Green", "Ped_Flash_Red"):
             #final checks before initialising pedestrian actions
             #checked if button is pressed that elapsed time of 2 seconds has passed
@@ -126,6 +126,7 @@ try:
             state = "Current_Stream_Yellow"
             startTime = currentTime
             pedPrinted = False
+            continue
         
         #setting up a loop for when nothing is pressed
         if state == "TL4_Green":
@@ -133,23 +134,27 @@ try:
                 make(tl4G, 0); make(tl4Y, 1); make(tl4R, 0)
                 state = "TL4_Yellow"
                 startTime = currentTime
+                continue
         elif state == "TL4_Yellow":
             if elapsedTime >= durTl4Yellow:
                 make(tl4G, 0); make(tl4Y, 0); make(tl4R, 1)
                 make(tl5G, 1); make(tl5Y, 0); make(tl5R, 0)
                 state = "TL5_Green"
                 startTime = currentTime
+                continue
         elif state == "TL5_Green":
             if elapsedTime >= durTl5Green: #check if 3s have passed, make tl5 yellow
                 make(tl5G, 0); make(tl5Y, 1); make(tl5R, 0)
                 state = "TL5_Yellow"
                 startTime = currentTime
+                continue
         elif state == "TL5_Yellow":
             if elapsedTime >= durTl5Yellow:
                 make(tl4G, 1); make(tl4Y, 0); make(tl4R, 0)
                 make(tl5G, 0); make(tl5Y, 0); make(tl5R, 1)
                 state = "TL4_Green"
                 startTime = currentTime
+                continue
         #pedestrian actions now:
         #now that the current stream of traffic has turned yellow for 3s,
         #all traffic can turn red and peds can cross
@@ -160,17 +165,20 @@ try:
                 make(pl2G, 1); make(pl2R, 0)
                 state = "Ped_Green"
                 startTime = currentTime
+                continue
             elif elapsedTime >= durTl4Yellow and currentWayEnding == "TL4": 
                 make(tl4G, 0); make(tl4Y, 0); make(tl4R, 1)
                 make(pl1G, 1); make(pl1R, 0)
                 make(pl2G, 1); make(pl2R, 0)
                 state = "Ped_Green"
                 startTime = currentTime
+                continue
         elif state == "Ped_Green":
             if elapsedTime >= durPedGreen:
                 make(pl1G, 0); make(pl2G, 0)
                 state = "Ped_Flash_Red"
                 startTime = currentTime
+                continue
         elif state == "Ped_Flash_Red":
             #to work out if LED should be one or off
             #multiplying by flashHz turns it into flashes per second
@@ -188,9 +196,11 @@ try:
                 currentWayEnding = None
                 pedPressed = False
                 pedPressTime = None
+                continue
             time.sleep(0.1)
        
 except KeyboardInterrupt:
+    print("Shutting Down...")
     turn_off()
     board.shutdown()
 
