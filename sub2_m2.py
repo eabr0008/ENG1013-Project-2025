@@ -1,7 +1,7 @@
 # Initial prototype of subsystem 2 milestone 2 code
 # Created By : Eden Abrahams & Majd Abou Zaki
-# Last Edited Date: 08/09/2025
-# version = 1.8
+# Last Edited Date: 10/09/2025
+# version = 1.9
 '''
 Used chatGPT 5 in the lines 174,176,177, where it was quite difficult 
 to find an elegent way to make the pedestrian light flash smoothly
@@ -40,9 +40,9 @@ ledPinNums = [tl4G,tl4Y,tl4R,tl5G,tl5Y,tl5R,pl1G,pl1R,pl2G,pl2R]
 #Common Durations:
 
 #traffic lights:
-durTl4Green = 20 #tl4 is green for 20 seconds
+durTl4Green = 5 #tl4 is green for 20 seconds
 durTl4Yellow = 3 #tl4 is yellow for 3 seconds
-durTl5Green = 10 #tl5 is green for 20 seconds
+durTl5Green = 5 #tl5 is green for 20 seconds
 durTl5Yellow = 3 #tl5 is yellow for 3 seconds
 
 #pedestrian lights:
@@ -98,7 +98,7 @@ try:
         #time so far elapsed is then established as current - start
         currentTime = time.time()
         elapsedTime = currentTime - startTime
-        # read buttons (active-low, 0 means is pressed)
+        # read buttons (active-high, 1023 means is pressed)
         pb1Pressed = board.analog_read(pb1)[0] == 1023
         pb2Pressed = board.analog_read(pb2)[0] == 1023
         #reading the button presses and printing accordingly
@@ -155,6 +155,7 @@ try:
                 make(tl5G, 0); make(tl5Y, 0); make(tl5R, 1)
                 make(tl4G, 1); make(tl4Y, 0); make(tl4R, 0)
                 startTime = currentTime
+                state = "TL4_Green"
                 continue
         #pedestrian actions now:
         #now that the current stream of traffic has turned yellow for 3s,
@@ -206,4 +207,3 @@ except KeyboardInterrupt:
     make(pl1G, 0); make(pl2G, 0)
     make(pl1R, 0); make(pl2R, 0)
     board.shutdown()
-
