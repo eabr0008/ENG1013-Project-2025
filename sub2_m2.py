@@ -1,7 +1,7 @@
 # Initial prototype of subsystem 2 milestone 2 code
 # Created By : Eden Abrahams & Majd Abou Zaki
 # Last Edited Date: 10/09/2025
-# version = 1.9
+# version = 2.0
 '''
 Used chatGPT 5 in the lines 174,176,177, where it was quite difficult 
 to find an elegent way to make the pedestrian light flash smoothly
@@ -40,9 +40,9 @@ ledPinNums = [tl4G,tl4Y,tl4R,tl5G,tl5Y,tl5R,pl1G,pl1R,pl2G,pl2R]
 #Common Durations:
 
 #traffic lights:
-durTl4Green = 5 #tl4 is green for 20 seconds
+durTl4Green = 20 #tl4 is green for 20 seconds
 durTl4Yellow = 3 #tl4 is yellow for 3 seconds
-durTl5Green = 5 #tl5 is green for 20 seconds
+durTl5Green = 10 #tl5 is green for 10 seconds
 durTl5Yellow = 3 #tl5 is yellow for 3 seconds
 
 #pedestrian lights:
