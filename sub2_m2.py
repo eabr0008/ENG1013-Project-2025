@@ -1,7 +1,7 @@
 # Initial prototype of subsystem 2 milestone 2 code
 # Created By : Eden Abrahams & Majd Abou Zaki
 # Last Edited Date: 10/09/2025
-# version = 2.1
+# version = 2.2
 '''
 Used chatGPT 5 in the lines 174,176,177, where it was quite difficult 
 to find an elegent way to make the pedestrian light flash smoothly
@@ -98,10 +98,14 @@ make(pl2R, 1)
 state = "TL4_Green"
 startTime = time.time()
 
-pedPressed = False #is a pedestrian button pressed
+pedPressed = False #is one of the pedestrian buttons pressed
 pedPressTime = None #time at press
 pedPrinted = False #has this been printed 
 currentWayEnding = None   # "TL4" or "TL5" 
+
+#30s inactivitive for pb's
+pedInactiveDuration = 30
+pedInactiveUntil = 0
 
 
 try:
@@ -112,8 +116,14 @@ try:
         elapsedTime = currentTime - startTime
         analogHigh = 1023
         # read buttons (active-high, 1023 means is pressed)
-        pb1Pressed = board.analog_read(pb1)[0] == analogHigh
+        pb1Pressed = board.analog_read(pb1)[0] == analogHigh #== means boolean therefore true when high
         pb2Pressed = board.analog_read(pb2)[0] == analogHigh
+
+        #Ignore presses during the 30s, this is done before any action is taken on button presses
+        if currentTime < pedInactiveUntil:
+            pb1Pressed = False
+            pb2Pressed = False
+
         #reading the button presses and printing accordingly
         if (pb1Pressed or pb2Pressed) and not pedPressed:
             pedPressed = True 
@@ -147,6 +157,9 @@ try:
             state = "Current_Stream_Yellow"
             startTime = currentTime
             pedPrinted = False
+            #Start 30s when ped sequence runs
+            pedInactiveUntil = currentTime + pedInactiveDuration #at start, time is 0 so thats fine,
+            #when the time is 10s elapsed overall for example, the pedInactiveUntil becomes 40s (buttons ignored till that time value is reached)
             continue
         
         #setting up a loop for when nothing is pressed
