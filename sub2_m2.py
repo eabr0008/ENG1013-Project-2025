@@ -1,7 +1,7 @@
 # Initial prototype of subsystem 2 milestone 2 code
 # Created By : Eden Abrahams & Majd Abou Zaki
 # Last Edited Date: 10/09/2025
-# version = 2.2
+# version = 2.3
 '''
 Used chatGPT 5 in the lines 174,176,177, where it was quite difficult 
 to find an elegent way to make the pedestrian light flash smoothly
@@ -33,6 +33,9 @@ pl1R = 9
 pl2G = 10
 pl2R = 11
 
+#555 timer pin:
+pin555 = 12
+
 
 ledPinNums = [tl4G,tl4Y,tl4R,tl5G,tl5Y,tl5R,pl1G,pl1R,pl2G,pl2R]
 
@@ -52,9 +55,12 @@ durPedFlash = 2 #ped flashes red for 2 seconds
 flashHz = 3 #flash 3 times per second
 
 #initialisations for inputs
-#needs to be analogue due to bouncing and noise issues
+#needs to be analogue due to bouncing / noise issues
 board.set_pin_mode_analog_input(pb1)
 board.set_pin_mode_analog_input(pb2)
+
+#intialise 555 timer pin
+board.set_pin_mode_digital_input(pin555)
 
 #set the pins to digital output (for LEDs)
 for pin in ledPinNums:
@@ -242,12 +248,10 @@ try:
                 continue
         elif state == "Ped_Flash_Red":
             #to work out if LED should be one or off
-            #multiplying by flashHz turns it into flashes per second
-            #int() makes sure that is is only 1 or 0
-            phase = int((elapsedTime) * flashHz) % 2
-            #if phase is 1, then it will turn on, otherwise it will be off
-            make(pl1R, 1 if phase else 0)
-            make(pl2R, 1 if phase else 0)
+            clock = board.digital_read(pin555)[0]
+            #if 1, then it will turn on, otherwise it will be off
+            make(pl1R, 1 if clock else 0)
+            make(pl2R, 1 if clock else 0)
             if elapsedTime >= durPedFlash:
                 make(pl1R, 1)
                 make(pl2R, 1)
@@ -263,8 +267,9 @@ try:
                 pedPressed = False
                 pedPressTime = None
                 continue
-            smallSleep = 0.1
-            time.sleep(smallSleep)
+            #quick sleep so stuff doesn't overload
+            quickSleep = 0.05
+            time.sleep(quickSleep)
        
 except KeyboardInterrupt:
     print("Shutting Down...")
