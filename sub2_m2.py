@@ -1,11 +1,10 @@
 # Subsystem 2 finalised code
 # Created By : Eden Abrahams
 # Last Edited Date: 13/10/2025
-# version = 2.4
+# version = 2.5
 '''
-Used chatGPT 5 in the lines 174,176,177, where it was quite difficult 
-to find an elegent way to make the pedestrian light flash smoothly
-https://chatgpt.com/s/t_68bf7de1f4f08191a590d628d14a0a68
+Google search / ai overview was used to figure out line 66 and it's associated
+error involving pymata not reading the ldr value immediately, small sleep was required.
 '''
 from pymata4 import pymata4
 board = pymata4.Pymata4()
@@ -53,7 +52,7 @@ durTl5Yellow = 3 #tl5 is yellow for 3 seconds
 pedDelayBeforeSequence = 2 #wait 2 seconds before pedestrian actions
 durPedGreen = 3 #pedestrian lights should turn green for 3 seconds
 durPedFlash = 2 #ped flashes red for 2 seconds 
-flashHz = 3 #flash 3 times per second
+
 
 #initialisations for inputs
 #needs to be analogue due to bouncing / noise issues
@@ -65,6 +64,7 @@ board.set_pin_mode_digital_input(pin555)
 
 #initialise LDR pin
 board.set_pin_mode_analog_input(pinLDR)
+time.sleep(0.1)
 
 #set the pins to digital output (for LEDs)
 for pin in ledPinNums:
@@ -107,9 +107,22 @@ make(pl2R, 1)
 
 state = "TL4_Green"
 startTime = time.time()
+def set_cycle_durations(currentDay):
+    '''
+    set globally both greens for the entire traffic light cycle
+    Parameters: currentDay (tells if day or night based on True or False Boolean)
+    Returns: None
+    '''
+    global durTl4Green
+    global durTl5Green
+    if currentDay:
+        durTl4Green = 20 # day timings
+        durTl5Green = 10
+    else:
+        durTl4Green = 30 # night timings
+        durTl5Green = 5
 
-
-
+day = True # is it day or night cycle, start as day
 
 pedPressed = False #is one of the pedestrian buttons pressed
 pedPressTime = None #time at press
@@ -124,27 +137,23 @@ pedInactiveUntil = 0
 thresh1 = 600
 thresh2 = 500
 
-#starting conditions for DS2
-day = True
-
-while True:
-    #set values for daytime if it is true or not
-    ldr = board.analog_read(pinLDR)[0]
-    if ldr >= thresh1: #tried to seperate by 100 to not flicker easily between day and night
-        day = True 
-    if ldr <= thresh2:
-        day = False
-
-cycle = day
-if cycle == day:
-    durTl4Green = 20   # day timing
-    durTl5Green = 10
+ldr0 = board.analog_read(pinLDR)[0]
+ldr0 = 0 if ldr0 is None else ldr0
+if ldr0 >= thresh1:
+    day = True
+elif ldr0 <= thresh2:
+    day = False
 else:
-    durTl4Green = 30   # night timing
-    durTl5Green = 5
-
+    day = True
+set_cycle_durations(day)
 try:
     while True:
+        #read the ldr unsing analogue and set day or night based on reading
+        ldr = board.analog_read(pinLDR)[0]
+        if ldr >= thresh1:
+            day = True
+        elif ldr <= thresh2:
+            day = False
         #at any point in time, the current time is defined
         #time so far elapsed is then established as current - start
         currentTime = time.time()
@@ -241,6 +250,7 @@ try:
                 make(tl4R, 0)
                 startTime = currentTime
                 state = "TL4_Green"
+                set_cycle_durations(day)
                 continue
         #pedestrian actions now:
         #now that the current stream of traffic has turned yellow for 3s,
@@ -295,6 +305,7 @@ try:
                 currentWayEnding = None
                 pedPressed = False
                 pedPressTime = None
+                set_cycle_durations(day)
                 continue
             #quick sleep so stuff doesn't overload
             quickSleep = 0.05
