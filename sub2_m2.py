@@ -1,9 +1,9 @@
 # Subsystem 2 finalised code
 # Created By : Eden Abrahams
 # Last Edited Date: 13/10/2025
-# version = 2.5
+# version = 2.6
 '''
-Google search / ai overview was used to figure out line 66 and it's associated
+Google search / ai overview was used to figure out line 68 and it's associated
 error involving pymata not reading the ldr value immediately, small sleep was required.
 Search: "ldr not reading values immediately"
 '''
