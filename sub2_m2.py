@@ -5,6 +5,7 @@
 '''
 Google search / ai overview was used to figure out line 66 and it's associated
 error involving pymata not reading the ldr value immediately, small sleep was required.
+Search: "ldr not reading values immediately"
 '''
 from pymata4 import pymata4
 board = pymata4.Pymata4()
