@@ -1,7 +1,7 @@
-# Initial prototype of subsystem 2 milestone 2 code
-# Created By : Eden Abrahams & Majd Abou Zaki
-# Last Edited Date: 10/09/2025
-# version = 2.3
+# Subsystem 2 finalised code
+# Created By : Eden Abrahams
+# Last Edited Date: 13/10/2025
+# version = 2.4
 '''
 Used chatGPT 5 in the lines 174,176,177, where it was quite difficult 
 to find an elegent way to make the pedestrian light flash smoothly
@@ -36,6 +36,9 @@ pl2R = 11
 #555 timer pin:
 pin555 = 12
 
+#LDR pin
+pinLDR = 0
+
 
 ledPinNums = [tl4G,tl4Y,tl4R,tl5G,tl5Y,tl5R,pl1G,pl1R,pl2G,pl2R]
 
@@ -43,9 +46,7 @@ ledPinNums = [tl4G,tl4Y,tl4R,tl5G,tl5Y,tl5R,pl1G,pl1R,pl2G,pl2R]
 #Common Durations:
 
 #traffic lights:
-durTl4Green = 20 #tl4 is green for 20 seconds
 durTl4Yellow = 3 #tl4 is yellow for 3 seconds
-durTl5Green = 10 #tl5 is green for 10 seconds
 durTl5Yellow = 3 #tl5 is yellow for 3 seconds
 
 #pedestrian lights:
@@ -61,6 +62,9 @@ board.set_pin_mode_analog_input(pb2)
 
 #intialise 555 timer pin
 board.set_pin_mode_digital_input(pin555)
+
+#initialise LDR pin
+board.set_pin_mode_analog_input(pinLDR)
 
 #set the pins to digital output (for LEDs)
 for pin in ledPinNums:
@@ -104,6 +108,9 @@ make(pl2R, 1)
 state = "TL4_Green"
 startTime = time.time()
 
+
+
+
 pedPressed = False #is one of the pedestrian buttons pressed
 pedPressTime = None #time at press
 pedPrinted = False #has this been printed 
@@ -113,6 +120,28 @@ currentWayEnding = None   # "TL4" or "TL5"
 pedInactiveDuration = 30
 pedInactiveUntil = 0
 
+#light thresholds
+thresh1 = 600
+thresh2 = 500
+
+#starting conditions for DS2
+day = True
+
+while True:
+    #set values for daytime if it is true or not
+    ldr = board.analog_read(pinLDR)[0]
+    if ldr >= thresh1: #tried to seperate by 100 to not flicker easily between day and night
+        day = True 
+    if ldr <= thresh2:
+        day = False
+
+cycle = day
+if cycle == day:
+    durTl4Green = 20   # day timing
+    durTl5Green = 10
+else:
+    durTl4Green = 30   # night timing
+    durTl5Green = 5
 
 try:
     while True:
