@@ -200,7 +200,7 @@ try:
                 make(tl5Y, 0)
                 make(tl5R, 1)
             state = "Current_Stream_Yellow"
-            startTime = currentTime
+            startTime = currentTime #reset start time
             pedPrinted = False
             #Start 30s when ped sequence runs
             pedInactiveUntil = currentTime + pedInactiveDuration #at start, time is 0 so thats fine,
