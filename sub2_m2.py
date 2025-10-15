@@ -139,7 +139,6 @@ thresh1 = 600
 thresh2 = 500
 
 ldr0 = board.analog_read(pinLDR)[0]
-ldr0 = 0 if ldr0 is None else ldr0
 if ldr0 >= thresh1:
     day = True
 elif ldr0 <= thresh2:
