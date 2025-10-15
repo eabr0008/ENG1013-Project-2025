@@ -1,7 +1,7 @@
 # Subsystem 2 finalised code
 # Created By : Eden Abrahams
 # Last Edited Date: 13/10/2025
-# version = 2.6
+# version = 2.7
 '''
 Google search / ai overview was used to figure out line 68 and it's associated
 error involving pymata not reading the ldr value immediately, small sleep was required.
@@ -72,7 +72,7 @@ for pin in ledPinNums:
     board.set_pin_mode_digital_output(pin)
 def turn_off():
     '''
-    function makes each pin to output 0V (all off)
+    function light_states each pin to output 0V (all off)
     
     Parameters: None
     
@@ -82,9 +82,9 @@ def turn_off():
         board.digital_write(pin, 0)
 
 
-def make(light, state):
+def light_state(light, state):
     '''
-    makes a light turn on off by writing its state
+    light_states a light turn on off by writing its state
     
     Parameters: 
         light (int): Pin number for light
@@ -94,17 +94,17 @@ def make(light, state):
     '''
     board.digital_write(light, state)
 turn_off()
-#make tl4 green to start
-make(tl4G, 1)
-make(tl4Y, 0)
-make(tl4R, 0)
-make(tl5G, 0)
-make(tl5Y, 0)
-make(tl5R, 1)
-make(pl1G, 0)
-make(pl1R, 1)
-make(pl2G, 0)
-make(pl2R, 1)
+#light_state tl4 green to start
+light_state(tl4G, 1)
+light_state(tl4Y, 0)
+light_state(tl4R, 0)
+light_state(tl5G, 0)
+light_state(tl5Y, 0)
+light_state(tl5R, 1)
+light_state(pl1G, 0)
+light_state(pl1R, 1)
+light_state(pl2G, 0)
+light_state(pl2R, 1)
 
 state = "TL4_Green"
 startTime = time.time()
@@ -185,20 +185,20 @@ try:
             #checked if button is pressed that elapsed time of 2 seconds has passed
             if state in ("TL5_Green", "TL5_Yellow"): #2.R1 if TL5 is not red, goes yellow, getting ready for peds
                 currentWayEnding = "TL5"
-                make(tl5G, 0)
-                make(tl5Y, 1)
-                make(tl5R, 0)
-                make(tl4G, 0)
-                make(tl4Y, 0)
-                make(tl4R, 1)
+                light_state(tl5G, 0)
+                light_state(tl5Y, 1)
+                light_state(tl5R, 0)
+                light_state(tl4G, 0)
+                light_state(tl4Y, 0)
+                light_state(tl4R, 1)
             else:
-                currentWayEnding = "TL4" #then now make TL4 yellow, getting ready for peds
-                make(tl4G, 0)
-                make(tl4Y, 1)
-                make(tl4R, 0)
-                make(tl5G, 0)
-                make(tl5Y, 0)
-                make(tl5R, 1)
+                currentWayEnding = "TL4" #then now light_state TL4 yellow, getting ready for peds
+                light_state(tl4G, 0)
+                light_state(tl4Y, 1)
+                light_state(tl4R, 0)
+                light_state(tl5G, 0)
+                light_state(tl5Y, 0)
+                light_state(tl5R, 1)
             state = "Current_Stream_Yellow"
             startTime = currentTime #reset start time
             pedPrinted = False
@@ -210,45 +210,45 @@ try:
         #setting up a loop for when nothing is pressed
         if state == "TL4_Green":
             if elapsedTime >= durTl4Green: #if tl4 has been green for 20s
-                make(tl4G, 0)
-                make(tl4Y, 1)
-                make(tl4R, 0)
-                make(tl5G, 0)
-                make(tl5Y, 0)
-                make(tl5R, 1)
+                light_state(tl4G, 0)
+                light_state(tl4Y, 1)
+                light_state(tl4R, 0)
+                light_state(tl5G, 0)
+                light_state(tl5Y, 0)
+                light_state(tl5R, 1)
                 state = "TL4_Yellow"
                 startTime = currentTime
                 continue
         elif state == "TL4_Yellow":
             if elapsedTime >= durTl4Yellow:
-                make(tl4G, 0)
-                make(tl4Y, 0)
-                make(tl4R, 1)
-                make(tl5G, 1)
-                make(tl5Y, 0)
-                make(tl5R, 0)
+                light_state(tl4G, 0)
+                light_state(tl4Y, 0)
+                light_state(tl4R, 1)
+                light_state(tl5G, 1)
+                light_state(tl5Y, 0)
+                light_state(tl5R, 0)
                 state = "TL5_Green"
                 startTime = currentTime
                 continue
         elif state == "TL5_Green":
-            if elapsedTime >= durTl5Green: #check if 3s have passed, make tl5 yellow
-                make(tl5G, 0)
-                make(tl5Y, 1)
-                make(tl5R, 0)
-                make(tl4G, 0)
-                make(tl4Y, 0)
-                make(tl4R, 1)
+            if elapsedTime >= durTl5Green: #check if 3s have passed, light_state tl5 yellow
+                light_state(tl5G, 0)
+                light_state(tl5Y, 1)
+                light_state(tl5R, 0)
+                light_state(tl4G, 0)
+                light_state(tl4Y, 0)
+                light_state(tl4R, 1)
                 state = "TL5_Yellow"
                 startTime = currentTime
                 continue
         elif state == "TL5_Yellow":
             if elapsedTime >= durTl5Yellow:
-                make(tl5G, 0)
-                make(tl5Y, 0)
-                make(tl5R, 1)
-                make(tl4G, 1)
-                make(tl4Y, 0)
-                make(tl4R, 0)
+                light_state(tl5G, 0)
+                light_state(tl5Y, 0)
+                light_state(tl5R, 1)
+                light_state(tl4G, 1)
+                light_state(tl4Y, 0)
+                light_state(tl4R, 0)
                 startTime = currentTime
                 state = "TL4_Green"
                 set_cycle_durations(day)
@@ -258,31 +258,31 @@ try:
         #all traffic can turn red and peds can cross
         elif state == "Current_Stream_Yellow":
             if elapsedTime >= durTl5Yellow and currentWayEnding == "TL5": 
-                make(tl5G, 0)
-                make(tl5Y, 0)
-                make(tl5R, 1)
-                make(pl1G, 1)
-                make(pl1R, 0)
-                make(pl2G, 1)
-                make(pl2R, 0)
+                light_state(tl5G, 0)
+                light_state(tl5Y, 0)
+                light_state(tl5R, 1)
+                light_state(pl1G, 1)
+                light_state(pl1R, 0)
+                light_state(pl2G, 1)
+                light_state(pl2R, 0)
                 state = "Ped_Green"
                 startTime = currentTime
                 continue
             elif elapsedTime >= durTl4Yellow and currentWayEnding == "TL4": 
-                make(tl4G, 0)
-                make(tl4Y, 0)
-                make(tl4R, 1)
-                make(pl1G, 1)
-                make(pl1R, 0)
-                make(pl2G, 1)
-                make(pl2R, 0)
+                light_state(tl4G, 0)
+                light_state(tl4Y, 0)
+                light_state(tl4R, 1)
+                light_state(pl1G, 1)
+                light_state(pl1R, 0)
+                light_state(pl2G, 1)
+                light_state(pl2R, 0)
                 state = "Ped_Green"
                 startTime = currentTime
                 continue
         elif state == "Ped_Green":
             if elapsedTime >= durPedGreen:
-                make(pl1G, 0)
-                make(pl2G, 0)
+                light_state(pl1G, 0)
+                light_state(pl2G, 0)
                 state = "Ped_Flash_Red"
                 startTime = currentTime
                 continue
@@ -290,17 +290,17 @@ try:
             #to work out if LED should be one or off
             clock = board.digital_read(pin555)[0]
             #if 1, then it will turn on, otherwise it will be off
-            make(pl1R, 1 if clock else 0)
-            make(pl2R, 1 if clock else 0)
+            light_state(pl1R, 1 if clock else 0)
+            light_state(pl2R, 1 if clock else 0)
             if elapsedTime >= durPedFlash:
-                make(pl1R, 1)
-                make(pl2R, 1)
-                make(tl4G, 1)
-                make(tl4Y, 0)
-                make(tl4R, 0)
-                make(tl5G, 0)
-                make(tl5Y, 0)
-                make(tl5R, 1)
+                light_state(pl1R, 1)
+                light_state(pl2R, 1)
+                light_state(tl4G, 1)
+                light_state(tl4Y, 0)
+                light_state(tl4R, 0)
+                light_state(tl5G, 0)
+                light_state(tl5Y, 0)
+                light_state(tl5R, 1)
                 state = "TL4_Green"
                 startTime = currentTime
                 currentWayEnding = None
@@ -315,8 +315,8 @@ try:
 except KeyboardInterrupt:
     print("Shutting Down...")
     turn_off()
-    make(pl1G, 0)
-    make(pl2G, 0)
-    make(pl1R, 0)
-    make(pl2R, 0)
+    light_state(pl1G, 0)
+    light_state(pl2G, 0)
+    light_state(pl1R, 0)
+    light_state(pl2R, 0)
     board.shutdown()
