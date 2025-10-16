@@ -1,7 +1,7 @@
-# File Name: sub2_m3_EdenAbrahams.py
-# Created By: Eden Abrahams
-# Last Edited Date: 17/10/2025
-# version = 3.0
+# Subsystem 2 finalised code
+# Created By : Eden Abrahams
+# Last Edited Date: 13/10/2025
+# version = 2.7
 '''
 Google search / ai overview was used to figure out line 68 and it's associated
 error involving pymata not reading the ldr value immediately, small sleep was required.
